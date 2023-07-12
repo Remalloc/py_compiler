@@ -12,10 +12,11 @@ from Cython.Distutils import build_ext
 from setuptools import setup, Extension
 
 BASE_DIR = os.path.abspath("..")
-INCLUDE = [  # Add you want to compile files.If it empty will compile all files.
-]
+# Add files you want to compile. If it's empty, all files will be compiled.
+INCLUDE = []
 print(f"INCLUDE: {INCLUDE}")
-EXCLUDE = [  # Add you don't want to compile file.
+# Add files you don't want to compile.
+EXCLUDE = [
     os.path.abspath(__file__),  # self
     # os.path.join(BASE_DIR,file)
 ]
@@ -32,27 +33,27 @@ def pre_print(lines, prefix="-->"):
 
 
 def set_base_dir(path: str):
-    """Verify dir path and set execute dir."""
+    """Verify the directory path and set the execution directory"""
     if not os.path.exists(path):
-        raise ValueError(f"Not find {path}.")
+        raise ValueError(f"Cannot find {path}.")
     if not os.path.isdir(path):
-        raise ValueError(f"{path} is not dir.")
+        raise ValueError(f"{path} is not a directory.")
     global BASE_DIR
     BASE_DIR = os.path.abspath(path)
 
 
 def clean_temp_files(temp: set):
-    """Clean temp files after compiling"""
+    """Clean temporary files after compiling"""
     if not temp:
         return
-    pre_print("Below source code files will be removed:")
+    pre_print("The following source code files will be removed:")
     pre_print(temp)
-    pre_print("Above source code files will be removed, please confirm it.(y/n)")
+    pre_print("The above source code files will be removed, please confirm. (y/n)")
     confirm = input()
     if confirm.upper() == "Y":
         for p in temp:
             if os.path.exists(p):
-                pre_print("Remove", p)
+                pre_print("Removing", p)
                 os.remove(p)
 
 
@@ -76,16 +77,16 @@ def start_compile():
         easycython(False, False, False, *p)
         build_dirs.add(os.path.join(d, "build"))
     clean_temp_files(temp)
-    pre_print("The build dirs need to delete manually.")
+    pre_print("The build directories need to be deleted manually.")
     pre_print(build_dirs, "rm -rf")
-    pre_print("Compile Finish!")
+    pre_print("Compilation Finished!")
 
 
 def main():
     if sys.platform != "linux":
-        raise OSError(f"Not support {sys.platform}, only linux.")
+        raise OSError(f"{sys.platform} is not supported, only linux.")
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", help="A dir path which is execute compiler")
+    parser.add_argument("-d", help="A directory path where the compiler will be executed")
     args = parser.parse_args()
     if getattr(args, "d"):
         set_base_dir(args.d)
