@@ -1,25 +1,26 @@
 # py_compiler
-Compile python source code to dynamic library.
+Compile Python source code into a dynamic library.
 
-### Installing
-Copy compiler.py in your project root path.
+### Installation
+Place the compiler.py file in your project root path.
+
 ```shell script
-# install gcc,python3
-pip install -r requirements
+# Install gcc and python3
+pip install Cython
 ```
 
 ## Getting Started
-Configure "INCLUDE" and "EXCLUDE" variables in compiler.py.
+Configure the "INCLUDE" and "EXCLUDE" variables in `compiler.py`.
 
-**Don't compile the entry file, you must add it in "EXCLUDE"**
+**Do not compile the entry file, you must add it to "EXCLUDE"**
 ```shell script 
 
-# Default compiling dir is "compiler.py" base dir.
+# The default compiling directory is the base directory of "compiler.py".
 python compiler.py
-# -d: Appoint compiling dir.
+# -d: Specify the compiling directory.
 python compiler.py -d /test_project
 ```
 
 ## Deployment
-* Only support linux system.
-* Python version greater than v3.6.
+* Only supports Linux systems.
+* Requires Python version v3.6 or higher.
