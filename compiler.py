@@ -12,24 +12,22 @@ PROJECT_NAME = os.path.basename(PROJECT_DIR)
 DST_DIR = os.path.abspath(os.path.join(".", "lib", PROJECT_NAME))  # Set the destination directory
 # Add files you don't want to compile.
 EXCLUDE = [
-    os.path.abspath(__file__),  # self
-    os.path.abspath("main.py")
+    os.path.abspath(__file__)  # self
 ]
 
 USE_NUMPY = False  # Set whether to use numpy
-USE_CDIVISION = False
+USE_CDIVISION = False  # If set to True, the compiler will use C division instead of Python division, which is faster but may cause overflow.
 
 
 class Compiler(object):
     def __init__(self):
-        self.dirs = [PROJECT_DIR] + glob(os.path.join(PROJECT_DIR, "**/"))
-        print()
+        self.dirs = [f for f in glob(os.path.join(PROJECT_DIR, "**"), recursive=True) if os.path.isdir(f)]
+        self.init_pys = glob(os.path.join(PROJECT_DIR, '**', "__init__.py"), recursive=True)
 
-    @staticmethod
-    def get_py_code(subdir):
+    def get_py_code(self, subdir):
         files = [os.path.join(subdir, f) for f in os.listdir(subdir)]
         files = [f for f in files if f.endswith(".py") or f.endswith(".pyx")]
-        return [os.path.abspath(f) for f in files if f not in EXCLUDE]
+        return [os.path.abspath(f) for f in files if f not in EXCLUDE and f not in self.init_pys]
 
     @staticmethod
     def get_c_code(subdir):
@@ -37,9 +35,8 @@ class Compiler(object):
         files = [f for f in files if f.endswith(".c")]
         return [os.path.abspath(f) for f in files if f not in EXCLUDE]
 
-    @staticmethod
-    def _compile(subdir: str):
-        py_files = Compiler.get_py_code(subdir)
+    def _compile(self, subdir: str):
+        py_files = self.get_py_code(subdir)
         if not py_files:
             return
         include_dirs = []
@@ -66,13 +63,12 @@ class Compiler(object):
         for subdir in self.dirs:
             self._compile(subdir)
 
-    @staticmethod
-    def package():
+    def package(self):
         if os.path.exists(DST_DIR):
             raise FileExistsError(f"Destination directory already exists: {DST_DIR}")
         file_type = "*.so" if sys.platform == "linux" else "*.pyd"
         files = glob(os.path.join(PROJECT_DIR, '**', file_type), recursive=True)
-        for file in files:
+        for file in files + self.init_pys:
             rel_path = os.path.relpath(file, start=PROJECT_DIR)
             dst_file = os.path.join(DST_DIR, rel_path)
             os.makedirs(os.path.dirname(dst_file), exist_ok=True)
@@ -87,6 +83,8 @@ class Compiler(object):
                 if os.path.exists(path):
                     print("Found :", path)
                     paths.append(path)
+        if not paths:
+            return
         if input(f"Remove above temp files? (y/n): ").lower() != "y":
             return
         for path in paths:
@@ -100,6 +98,7 @@ class Compiler(object):
 
 def main():
     compiler = Compiler()
+    compiler.cleanup()
     compiler.compile()
     compiler.package()
     compiler.cleanup()
