@@ -11,8 +11,10 @@ pip install Cython
 
 ## Getting Started
 Configure the "EXCLUDE" variables in `compiler.py`.
+
 **Do not compile the entry file, you must add it to "EXCLUDE"**
-**All __init__.py files will be ignored because Cython 2.9 has some problems under the Win32 platform.**
+
+**All `__init__.py` files will be ignored because Cython 2.9 has some problems under the Win32 platform.**
 ```shell script 
 
 # The default compiling directory is the base directory of "compiler.py".
