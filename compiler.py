@@ -66,7 +66,7 @@ class Compiler(object):
     def package(self):
         if os.path.exists(DST_DIR):
             raise FileExistsError(f"Destination directory already exists: {DST_DIR}")
-        file_type = "*.so" if sys.platform == "linux" else "*.pyd"
+        file_type = {"linux": "*.so", "win32": "*.pyd", "darwin": "*.so"}[sys.platform]
         files = glob(os.path.join(PROJECT_DIR, '**', file_type), recursive=True)
         for file in files + self.init_pys:
             rel_path = os.path.relpath(file, start=PROJECT_DIR)
