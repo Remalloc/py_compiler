@@ -22,5 +22,5 @@ python compiler.py
 ```
 
 ## Deployment
-* Only supports Linux and Win32 systems.
+* Only supports Linux,Win32 and MacOS platforms.
 * Requires Python version v3.6 or higher.
